@@ -7,6 +7,9 @@ import pokemon.Condition;
 import pokemon.Pokemon;
 import pokemon.card.*;
 
+/**
+ * @deprecated
+ */
 public class Battler
 {
 	protected static Player red;

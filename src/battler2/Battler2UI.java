@@ -26,13 +26,24 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 
+import pokemon.Pokemon;
+import pokemon.card.Abra;
+import pokemon.card.Aerodactyl;
+import pokemon.card.Arcanine;
+import pokemon.card.Articuno;
+import pokemon.card.Charmander;
+import pokemon.card.Growlithe;
+import pokemon.card.Magneton;
+import pokemon.card.Voltorb;
+import battler2.Player;
+
 import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.swing.AutoCompleteSupport;
 
 public class Battler2UI extends JFrame
 {
 	private static final long	serialVersionUID	= -2608356796626531611L;
-	private static final String VERSION_NUMBER = "0.0.3.0 ALPHA BUILD v1.0";
+	private static final String VERSION_NUMBER = "0.0.3.1";
 	
 	private Container container;
 	
@@ -88,10 +99,10 @@ public class Battler2UI extends JFrame
 	/*
 	 * GUI VARIABLES - BattleUI
 	 */
-	private InfoBox red;
-	private InfoBox blu;
+	protected static InfoBox red;
+	protected static InfoBox blu;
 	
-	private JButton move1,
+	protected static JButton move1,
 				   move2,
 				   move3,
 				   move4,
@@ -106,19 +117,18 @@ public class Battler2UI extends JFrame
 				   forfeitGame,
 				   passTurn;
 	
-	private JTextArea console;
+	protected static JTextArea console;
 	
 	public Battler2UI()
 	{
 		initDefaultUI();
-		// initSplashScreenUI(); // TODO show the splash screen when the program is loaded..
 	}
 	
 	/**
 	 * TODO LIST OF SORTS
 	 * 
+	 * - Rework pokemon for pokemon powers and AI
 	 * - Finish Wild Battle setup (have it transition right into a battle (send params of what's picked to the battler)
-	 * - Finish Battle setup (needs to take a boatload of information and translate it to it's UI)
 	 * - Redo Battle logic............. fuck.. (so that actual battles can take place)
 	 * 
 	 * - Implement the trainer battle side of things (should be easy if everything else is working well)
@@ -136,6 +146,8 @@ public class Battler2UI extends JFrame
 		createMenuBar();
 		
 		container = getContentPane();
+		
+		// initSplashScreenUI(); // TODO show the splash screen when the program is loaded..
 	}
 	
 	private void createMenuBar()
@@ -287,7 +299,34 @@ public class Battler2UI extends JFrame
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				// initBattleUI(); // TODO feed the UI information to some function that starts up the battle logic..
+				initBattleUI();
+				//getRandomPokemon(rarity.getSelectedCheckbox().toString()); // TODO make this method real
+				// TODO create both players
+				
+				// PLACE HOLDER
+				Player player;
+				Player wildPokemon;
+				
+				Pokemon redPokemon[] = new Pokemon[4];
+				redPokemon[0] = new Arcanine(0);
+				redPokemon[1] = new Aerodactyl(0);
+				redPokemon[2] = new Abra(0);
+				redPokemon[3] = new Articuno(0);
+				player = new Player("Some Scrub", redPokemon);
+				player.setActivePokemon(redPokemon[0]);
+				
+				// blu is bottom
+				Pokemon bluPokemon[] = new Pokemon[4];
+				bluPokemon[0] = new Charmander(2);
+				bluPokemon[1] = new Growlithe(0);
+				bluPokemon[2] = new Magneton(0);
+				bluPokemon[3] = new Voltorb(0);
+				wildPokemon = new Player("Ryan", bluPokemon);
+				wildPokemon.setActivePokemon(bluPokemon[0]);
+				
+				
+				Battler2 b2 = new Battler2(player, wildPokemon);
+				b2.doBattle(true); // TODO feed the UI information to some function that starts up the battle logic..
 			}
 
 		});

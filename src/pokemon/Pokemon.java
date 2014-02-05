@@ -21,7 +21,8 @@ public abstract class Pokemon
 	protected Condition condition = Condition.NONE;
 	
 	protected int chanceToMiss = 0; // from 0% to 100% chance
-	protected boolean gotKill = false;
+	protected boolean canAttack = true;
+	protected boolean isSwitchable = true;
 	
 	protected Rarity rarity;
 	
@@ -214,13 +215,39 @@ public abstract class Pokemon
 		this.chanceToMiss = chanceToMiss;
 	}
 	
-	public boolean gotKill()
+	public boolean getCanAttack()
 	{
-		return gotKill;
+		return canAttack;
 	}
-	public void setGotKill(boolean gotKill)
+	public void setCanAttack(boolean canAttack)
 	{
-		this.gotKill = gotKill;
+		this.canAttack = canAttack;
+	}
+	
+	public boolean getIsSwitchable()
+	{
+		if(isSwitchable == false)
+		{
+			return false;
+		}
+		
+		else // is switchable
+		{
+			// and alive
+			if(this.getHitPoints() > 0)
+			{
+				return true;
+			}
+			
+			else // not alive
+			{
+				return false;
+			}
+		}
+	}
+	public void setIsSwitchable(boolean isSwitchable)
+	{
+		this.isSwitchable = isSwitchable;
 	}
 
 	public Rarity getRarity()

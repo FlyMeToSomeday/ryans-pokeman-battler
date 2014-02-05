@@ -1,10 +1,7 @@
-package battler;
+package battler2;
 
 import pokemon.Pokemon;
 
-/**
- * @deprecated
- */
 public class Player
 {
 	protected String name;
