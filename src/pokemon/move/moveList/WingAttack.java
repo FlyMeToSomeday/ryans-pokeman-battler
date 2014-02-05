@@ -1,6 +1,6 @@
 package pokemon.move.moveList;
 
-import battler.Player;
+import battler2.Player;
 import pokemon.move.Move;
 
 public class WingAttack extends Move

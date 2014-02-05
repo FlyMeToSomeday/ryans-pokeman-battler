@@ -1,6 +1,10 @@
 package battler2;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Random;
+
+import javax.swing.JButton;
 
 import battler2.Battler2UI;
 import battler2.Player;
@@ -20,13 +24,14 @@ public class Battler2
 	private void doTurn(boolean aiEnabled, Player me, Player you)
 	{
 		// make our controls control the right person..
-		setButtonActionListeners(me);
+		setButtonActionListeners(aiEnabled, me, you);
 	}
 	
 	// TODO finish this method.. make the buttons do things
-	private void setButtonActionListeners(Player forWho)
+	// the helper methods DO NO ERROR CHECKING, if a control is enabled, the player can do it un-checked!!!!1!!!11!
+	private void setButtonActionListeners(boolean aiEnabled, Player me, Player you)
 	{
-		// disable the buttons, enable them as we need them..
+		// disable all of the buttons, enable them as we need them..
 		Battler2UI.move1.setEnabled(false);
 		Battler2UI.move2.setEnabled(false);
 		Battler2UI.move3.setEnabled(false);
@@ -39,97 +44,182 @@ public class Battler2
 		Battler2UI.switch5.setEnabled(false);
 		Battler2UI.switch6.setEnabled(false);
 		
-		if(forWho.getActivePokemon() != null)
+		// if its the ai's turn, then disable the UI
+		if(aiEnabled)
 		{
-			// set moves tool tips..
-			if(forWho.getActivePokemon().getMoves() != null)
+			Battler2UI.viewMoves.setEnabled(false);
+			Battler2UI.viewBench.setEnabled(false);
+			Battler2UI.forfeitGame.setEnabled(false);
+			Battler2UI.passTurn.setEnabled(false);
+		}
+		
+		else // the ai is not enabled for this turn, then build the player controls
+		{
+			if(me.getActivePokemon() != null)
 			{
-				for(int i = 0; i < forWho.getActivePokemon().getMoves().length; i++)
+				// if active pokemon is dead, force switch and don't allow moves
+				if(me.getActivePokemon().getHitPoints() < 0)
 				{
-					switch(i)
+					Battler2UI.passTurn.setEnabled(false);
+				}
+				
+				else // active is alive and able
+				{
+					// and can attack.. then set the moves..
+					if(me.getActivePokemon().getCanAttack())
 					{
-						case 0:
-							Battler2UI.move1.setToolTipText(forWho.getActivePokemon().getMoves()[0].getName() + " (" + forWho.getActivePokemon().getMoves()[0].getEnergyCost() + ")");
-							Battler2UI.move1.setEnabled(true);
-							break;
+						// set moves..
+						if(me.getActivePokemon().getMoves() != null)
+						{
+							for(int i = 0; i < me.getActivePokemon().getMoves().length; i++)
+							{
+								JButton tmp;
+								
+								switch(i)
+								{
+									case 0:
+										tmp = Battler2UI.move1;
+										break;
+										
+									case 1:
+										tmp = Battler2UI.move2;
+										break;
+										
+									case 2:
+										tmp = Battler2UI.move3;
+										break;
+										
+									case 3:
+										tmp = Battler2UI.move4;
+										break;
+										
+									default: // something went wrong..
+										tmp = new JButton();
+										break;
+								}
+								
+								tmp.setToolTipText(me.getActivePokemon().getMoves()[i].getName() + " (" + me.getActivePokemon().getMoves()[i].getEnergyCost() + ")");
+								
+								// if the pokemon has enough energy to use the move..
+								if(me.getActivePokemon().getEnergyCount() >= me.getActivePokemon().getMoves()[i].getEnergyCost())
+								{
+									tmp.setEnabled(true);
+									
+									// set the action listener..
+									tmp.addActionListener(new ActionListener()
+									{
+										@Override
+										public void actionPerformed(ActionEvent e)
+										{
+											// TODO useMove(i, me, you);
+										}
+									});
+								}
+							}
+						}
+					}
+					
+					// set switches..
+					for(int i = 0; i < me.getPokemon().length && me.getActivePokemon().getIsSwitchable(); i++)
+					{
+						JButton tmp;
+						
+						switch(i)
+						{
+							case 0:
+								tmp = Battler2UI.switch1;
+								break;
+								
+							case 1:
+								tmp = Battler2UI.switch2;
+								break;
+								
+							case 2:
+								tmp = Battler2UI.switch3;
+								break;
+								
+							case 3:
+								tmp = Battler2UI.switch4;
+								break;
+								
+							case 4:
+								tmp = Battler2UI.switch5;
+								break;
+								
+							case 5:
+								tmp = Battler2UI.switch6;
+								break;
+								
+							default: // something went wrong..
+								tmp = new JButton();
+								break;
+						}
+						
+						// if it is the active pokemon, then set the tool tip to show that and keep the button disabled..
+						if(me.getPokemon()[i].isActive())
+						{
+							tmp.setToolTipText("Current Active Pokemon");
+						}
+						
+						else // it is some other pokemon..
+						{
+							tmp.setToolTipText(me.getPokemon()[i].getName() + " (" + me.getPokemon()[i].getEnergyCount() + ")");
+							tmp.setEnabled(true);
 							
-						case 1:
-							Battler2UI.move2.setToolTipText(forWho.getActivePokemon().getMoves()[1].getName() + " (" + forWho.getActivePokemon().getMoves()[1].getEnergyCost() + ")");
-							Battler2UI.move2.setEnabled(true);
-							break;
-							
-						case 2:
-							Battler2UI.move3.setToolTipText(forWho.getActivePokemon().getMoves()[2].getName() + " (" + forWho.getActivePokemon().getMoves()[2].getEnergyCost() + ")");
-							Battler2UI.move3.setEnabled(true);
-							break;
-							
-						case 3:
-							Battler2UI.move4.setToolTipText(forWho.getActivePokemon().getMoves()[3].getName() + " (" + forWho.getActivePokemon().getMoves()[3].getEnergyCost() + ")");
-							Battler2UI.move4.setEnabled(true);
-							break;
-							
-						default: break;
+							// set the action listener..
+							tmp.addActionListener(new ActionListener()
+							{
+								@Override
+								public void actionPerformed(ActionEvent e)
+								{
+									// TODO switchTo(i, me);
+								}
+							});
+						}
 					}
 				}
 			}
 			
-			// set switch tool tips..
-			for(int i = 0; i < forWho.getPokemon().length; i++)
+			// setup the rest of the controls..
+			Battler2UI.viewMoves.setEnabled(true);
+			Battler2UI.viewMoves.addActionListener(new ActionListener()
 			{
-				switch(i)
+				@Override
+				public void actionPerformed(ActionEvent e)
 				{
-					case 0:
-						// if not active and switchable..
-						if(!(forWho.getPokemon()[0].isActive()) && forWho.getActivePokemon().getIsSwitchable())
-						{
-							Battler2UI.switch1.setToolTipText(forWho.getPokemon()[0].getName() + " (" + forWho.getPokemon()[0].getEnergyCount() + ")");
-							Battler2UI.switch1.setEnabled(true);
-						}
-						break;
-						
-					case 1:
-						if(!(forWho.getPokemon()[1].isActive()) && forWho.getActivePokemon().getIsSwitchable())
-						{
-							Battler2UI.switch2.setToolTipText(forWho.getPokemon()[1].getName() + " (" + forWho.getPokemon()[1].getEnergyCount() + ")");
-							Battler2UI.switch2.setEnabled(true);
-						}
-						break;
-						
-					case 2:
-						if(!(forWho.getPokemon()[2].isActive()) && forWho.getActivePokemon().getIsSwitchable())
-						{
-							Battler2UI.switch3.setToolTipText(forWho.getPokemon()[2].getName() + " (" + forWho.getPokemon()[2].getEnergyCount() + ")");
-							Battler2UI.switch3.setEnabled(true);
-						}
-						break;
-						
-					case 3:
-						if(!(forWho.getPokemon()[3].isActive()) && forWho.getActivePokemon().getIsSwitchable())
-						{
-							Battler2UI.switch4.setToolTipText(forWho.getPokemon()[3].getName() + " (" + forWho.getPokemon()[3].getEnergyCount() + ")");
-							Battler2UI.switch4.setEnabled(true);
-						}
-						break;
-						
-					case 4:
-						if(!(forWho.getPokemon()[4].isActive()) && forWho.getActivePokemon().getIsSwitchable())
-						{
-							Battler2UI.switch5.setToolTipText(forWho.getPokemon()[4].getName() + " (" + forWho.getPokemon()[4].getEnergyCount() + ")");
-							Battler2UI.switch5.setEnabled(true);
-						}
-						break;
-						
-					case 5:
-						if(!(forWho.getPokemon()[5].isActive()) && forWho.getActivePokemon().getIsSwitchable())
-						{
-							Battler2UI.switch6.setToolTipText(forWho.getPokemon()[5].getName() + " (" + forWho.getPokemon()[5].getEnergyCount() + ")");
-							Battler2UI.switch6.setEnabled(true);
-						}
-						break;
-						
-					default: break;
+					// TODO viewMoves(me);
 				}
-			}
+			});
+			
+			Battler2UI.viewBench.setEnabled(true);
+			Battler2UI.viewBench.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					// TODO viewBench(me);
+				}
+			});
+			
+			Battler2UI.forfeitGame.setEnabled(true);
+			Battler2UI.forfeitGame.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					// TODO forfeitGame(me);
+				}
+			});
+			
+			Battler2UI.passTurn.setEnabled(true);
+			Battler2UI.passTurn.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					// TODO passTurn(me);
+				}
+			});
 		}
 	}
 	
@@ -157,7 +247,7 @@ public class Battler2
 		// Who goes first?  Coin flip..
 		boolean redsTurn = random.nextBoolean();
 		
-		doTurn(false, red, blu);
+		doTurn(false, red, blu); // for testing only
 		
 //		while(battleStatus == 0)
 //		{
@@ -167,20 +257,8 @@ public class Battler2
 //			}
 //			
 //			else // blu's turn
-//			{
-//				if(aiEnabled)
-//				{
-//					// don't let the player act for the ai..
-//					//disableAllUI();
-//				}
-//				
+//			{	
 //				//doTurn(aiEnabled, blu, red);
-//				
-//				if(aiEnabled)
-//				{
-//					// let the player fuck with things again..
-//					//enableAllUI();
-//				}
 //			}
 //			
 //			//battleStatus = checkBattleStatus(red, blu); // see if this is over yet

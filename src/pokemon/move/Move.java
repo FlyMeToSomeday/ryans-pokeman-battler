@@ -1,6 +1,6 @@
 package pokemon.move;
 
-import battler.Player;
+import battler2.Player;
 
 public abstract class Move
 {

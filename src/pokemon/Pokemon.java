@@ -22,6 +22,15 @@ public abstract class Pokemon
 	
 	protected int chanceToMiss = 0; // from 0% to 100% chance
 	protected boolean canAttack = true;
+	
+	/*
+	 * isSwitchable applies to both being able to be switched to if its on the bench,
+	 * or being able to be switched out if it is the current active pokemon.
+	 * 
+	 * This must be watched very closely to ensure that pokemon don't get 'trapped'
+	 * and rendered useless when they otherwise should be able to be switched..
+	 * (mostly from conditions..)
+	 */
 	protected boolean isSwitchable = true;
 	
 	protected Rarity rarity;

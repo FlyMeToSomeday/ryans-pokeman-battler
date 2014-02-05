@@ -2,7 +2,7 @@ package pokemon.move.moveList;
 
 import java.util.Random;
 
-import battler.Player;
+import battler2.Player;
 import pokemon.move.Move;
 
 public class Blizzard extends Move
